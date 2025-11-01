@@ -1,156 +1,187 @@
-# 🧾 User Access Log Analysis & Security Monitoring Dashboard  
-*(Docker + Airflow + dbt + PostgreSQL + SQLAlchemy + Faker)*
+# User Access Log Analysis & Security Monitoring Dashboard
 
-This project demonstrates a **complete, containerized data pipeline** for analyzing user access and login behavior.  
-It combines **Python (SQLAlchemy)**, **PostgreSQL**, **dbt**, **Airflow**, and **Power BI**, all running in **Docker**.  
-The synthetic log data is generated automatically using the **Faker** library.
+A containerized data pipeline for analyzing user access patterns and security monitoring. Built with modern data engineering tools to demonstrate ETL automation and security analytics.
 
-[![Access Log Dashboard](/Resources/images/AccessLog_Thumbnail.png)]()
+## Tech Stack
+- 🐍 **Python** (SQLAlchemy, Faker) - Data generation & ingestion
+- 🐘 **PostgreSQL** - Data storage
+- 🧱 **dbt** - Data transformation
+- 🪶 **Airflow** - Pipeline orchestration 
+- 🐳 **Docker** - Containerization
+- 📊 **Power BI** - Visualization
 
-> ⚠️ All data is **synthetic**, created purely for demonstration and learning purposes.
+> **Note**: All data is synthetic, generated for demonstration purposes.
 
----
+## Key Features
+- 🔍 Detection of repeated failed login attempts
+- ⏰ Monitoring of off-hour access patterns
+- � Tracking of multiple logins from different IPs
+- � User activity dashboards and analytics
+- 🤖 Automated data pipeline with daily refreshes
 
-## 👨🏽‍💻 Author  
+## Author  
 **[Abdulhafiz Yusuf](https://github.com/Abdulhafiz-Yusuf)**  
-Data Engineering & Analytics Enthusiast  
-📍 Nigeria | 🎓 M.Sc. Information Technology (NOUN)
+Data Engineering & Analytics | Nigeria
 
----
+## Quick Start
 
-## 📚 Table of Contents
-- [🎯 Project Objective](#-project-objective)
-- [🧱 Architecture Overview](#-architecture-overview)
-- [🗂️ Data Design](#-data-design)
-- [🧰 Data Generation Script](#-data-generation-script)
-- [⚙️ Pipeline Components](#️-pipeline-components)
-- [🐋 Docker Setup](#-docker-setup)
-- [🪶 Airflow DAG Workflow](#-airflow-dag-workflow)
-- [📊 Power BI Dashboard](#-power-bi-dashboard)
-- [🚀 Run the Project](#-run-the-project)
-- [📁 Repository Structure](#-repository-structure)
-- [💬 Talking Points](#-talking-points)
+```bash
+# 1. Clone & setup
+git clone https://github.com/Abdulhafiz-Yusuf/access_log_dashboard.git
+cd access_log_dashboard
+mkdir -p dags logs plugins dbt_project data
 
----
+# 2. Generate sample data
+python generate_access_logs.py
 
-## 🎯 Project Objective
-Analyze **system login and access logs** to detect:
-- Repeated failed logins  
-- Off-hour access attempts  
-- Multiple logins from distinct IP addresses  
+# 3. Start services
+docker compose up -d
 
-This project showcases the **security analytics** capabilities of a modern data engineering stack.
+# 4. Access UIs
+Airflow: http://localhost:8081 (admin/admin)
+Adminer: http://localhost:8083
+```
 
----
+## Architecture
+```mermaid
+graph LR
+    A[generate_access_logs.py] -->|Faker| B[CSV]
+    B -->|SQLAlchemy| C[PostgreSQL]
+    C -->|dbt| D[Transformed Views]
+    D -->|Airflow| E[Automated Pipeline]
+    E -->|Power BI| F[Dashboard]
+```
 
-## 🧱 Architecture Overview
-```text
-[generate_access_logs.py] → [Python + SQLAlchemy] → [PostgreSQL] → [dbt Models] → [Airflow DAG] → [Power BI Dashboard]
-````
+## Data Pipeline
 
-| Layer          | Tool           | Purpose                               |
-| -------------- | -------------- | ------------------------------------- |
-| Data Source    | Python + Faker | Generate synthetic log data           |
-| Ingestion      | SQLAlchemy     | Load CSV into PostgreSQL              |
-| Storage        | PostgreSQL     | Persist structured log data           |
-| Transformation | dbt            | Derive aggregates and flags           |
-| Orchestration  | Airflow        | Automate ETL and transformations      |
-| Visualization  | Power BI       | Display user activity & anomalies     |
-| Deployment     | Docker         | Run everything in isolated containers |
+### 1. Data Generation
+The `generate_access_logs.py` script creates synthetic access logs with:
+- 750 sample records with realistic patterns
+- 92% success vs 8% failure rate
+- Work hours (8 AM – 6 PM) simulation
+- Auto-generated logout times for successful logins
 
----
-
-## 🗂️ Data Design
-
-**File:** `/data/access_logs.csv`
-
-| Column      | Example                      | Description             |
-| ----------- | ---------------------------- | ----------------------- |
-| log_id      | 1                            | Unique log entry ID     |
-| user_id     | 112                          | Employee or system user |
-| username    | ayusuf                       | User name               |
-| login_time  | 2025-10-21 08:15:30          | Login attempt time      |
-| logout_time | 2025-10-21 16:30:00          | Logout time             |
-| ip_address  | 102.89.44.12                 | Source IP               |
-| device_type | Desktop / Mobile             | Device used             |
-| status      | SUCCESS / FAILED             | Login status            |
-| branch_name | Gusau                        | Branch/office           |
-| role        | Teller / Ops / IT / Security | User role category      |
-
----
-
-## 🧰 Data Generation Script
-
-**File:** `generate_access_logs.py`
-
-This script creates a **realistic synthetic log dataset (500–1000 rows)** using the `Faker` library.
-
-### 📄 Key Features:
-
-* Random users, IPs, branches, and roles
-* 92% successful vs 8% failed logins
-* Realistic work hours (8 AM – 6 PM)
-* Automatic logout timestamps for successful sessions
-
-### 🧠 Code Snippet:
+### 2. Data Model
+```sql
+-- access_logs table
+log_id      INT PRIMARY KEY,
+user_id     INT,
+username    VARCHAR(50),
+login_time  TIMESTAMP,
+logout_time TIMESTAMP,
+ip_address  VARCHAR(50),
+device_type VARCHAR(20),
+status      VARCHAR(20),
+branch_name VARCHAR(50),
+role        VARCHAR(50)
+```
 
 ```python
-# generate_access_logs.py
-# ------------------------------------------------------------
-# Hands-on: Create realistic access_logs.csv (500–1000 rows)
-# ------------------------------------------------------------
-import csv, random
-from datetime import datetime, timedelta
-from faker import Faker
+### 3. dbt Transformations
 
-NUM_ROWS = 750
-SEED = 42
-OUTPUT_FILE = "access_logs.csv"
+```sql
+-- 1. Staging (stg_access_logs.sql)
+-- Clean and standardize raw data
+SELECT
+    log_id,
+    LOWER(TRIM(username)) AS username,
+    login_time,
+    INITCAP(device_type) AS device_type,
+    UPPER(status) AS status
+FROM source('raw_data', 'access_logs')
 
-random.seed(SEED)
-fake = Faker()
-Faker.seed(SEED)
+-- 2. Analytics (suspicious_activity.sql)
+-- Flag suspicious patterns
+SELECT
+    username,
+    COUNT(DISTINCT ip_address) AS ip_count,
+    COUNT(*) FILTER (
+        WHERE EXTRACT(HOUR FROM login_time) < 6 
+        OR EXTRACT(HOUR FROM login_time) > 21
+    ) AS off_hour_logins
+FROM stg_access_logs
+GROUP BY username
+HAVING COUNT(DISTINCT ip_address) > 3
+```
 
-USERNAMES = [fake.user_name() for _ in range(120)]
-BRANCHES = ["Gusau", "Kano", "Lagos", "Abuja", "Port Harcourt", "Ibadan"]
-ROLES = ["Teller", "Ops", "IT", "Security"]
-DEVICE_TYPES = ["Desktop", "Mobile"]
-STATUSES = ["SUCCESS", "FAILED"]
+### 4. Airflow DAG
+```python
+# access_log_refresh_dag.py
+with DAG(
+    "access_log_refresh_dag",
+    schedule="@daily",
+    start_date=datetime(2025, 11, 1)
+) as dag:
+    
+    load_data = PythonOperator(
+        task_id="load_access_logs",
+        python_callable=run_sqlalchemy_loader
+    )
+    
+    transform = BashOperator(
+        task_id="run_dbt_models",
+        bash_command='dbt run --project-dir /opt/airflow/dbt'
+    )
+    
+    load_data >> transform
+```
 
-def random_workday_timestamp(start_hour=8, end_hour=18):
-    start = datetime(2025, 1, 1)
-    end = datetime(2025, 12, 31)
-    random_day = start + timedelta(days=random.randint(0, (end - start).days))
-    hour, minute, second = random.randint(start_hour, end_hour - 1), random.randint(0, 59), random.randint(0, 59)
-    return random_day.replace(hour=hour, minute=minute, second=second, microsecond=0)
+## Development Setup
 
-rows = []
-for log_id in range(1, NUM_ROWS + 1):
-    username = random.choice(USERNAMES)
-    user_id = USERNAMES.index(username) + 100
-    login_time = random_workday_timestamp()
-    status = random.choices(STATUSES, weights=[0.92, 0.08])[0]
-    logout_time = login_time + timedelta(hours=random.randint(1, 8)) if status == "SUCCESS" else ""
+### Prerequisites
+- Docker & Docker Compose
+- Python 3.8+
+- dbt Core
 
-    rows.append({
-        "log_id": log_id,
-        "user_id": user_id,
-        "username": username,
-        "login_time": login_time.strftime("%Y-%m-%d %H:%M:%S"),
-        "logout_time": logout_time.strftime("%Y-%m-%d %H:%M:%S") if logout_time else "",
-        "ip_address": fake.ipv4(),
-        "device_type": random.choice(DEVICE_TYPES),
-        "status": status,
-        "branch_name": random.choice(BRANCHES),
-        "role": random.choice(ROLES),
-    })
+### Environment Variables
+```bash
+# .env
+POSTGRES_USER=airflow
+POSTGRES_PASSWORD=airflow
+POSTGRES_DB=airflow
+AIRFLOW_UID=50000
+```
 
-with open(OUTPUT_FILE, "w", newline="", encoding="utf-8") as f:
-    writer = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
-    writer.writeheader()
-    writer.writerows(rows)
+### Docker Services
+| Service | Port | Purpose |
+|---------|------|---------|
+| Airflow | 8081 | Pipeline orchestration |
+| Adminer | 8083 | Database management |
+| PostgreSQL | 5432 | Data warehouse |
 
-print(f"✅ Created {OUTPUT_FILE} with {len(rows)} rows.")
+## Monitoring & Analytics
+
+### 1. Access Overview
+- Total login attempts
+- Success/failure rates
+- Device usage patterns
+
+### 2. Security Metrics
+- Failed login clusters
+- Off-hour access attempts 
+- Multiple IP addresses per user
+
+### 3. Power BI Connection
+```yaml
+host: localhost
+port: 5432
+database: airflow
+username: airflow
+password: airflow
+```
+
+## Contributing
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a new Pull Request
+
+## License
+This project is licensed under the MIT License.
+
+## Disclaimer
+All data used is synthetic and generated for demonstration purposes only.
 ```
 
 ✅ Output: `access_logs.csv` (750 rows)
