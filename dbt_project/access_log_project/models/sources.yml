@@ -1,0 +1,7 @@
+sources:
+- name: 'raw_data'
+  schema: 'public'
+  database: 'access_log_analysis'
+  tables:
+  - name: 'access_logs'
+

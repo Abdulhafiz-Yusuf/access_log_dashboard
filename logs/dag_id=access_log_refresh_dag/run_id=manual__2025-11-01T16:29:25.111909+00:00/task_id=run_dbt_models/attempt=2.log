@@ -1,0 +1,42 @@
+[2025-11-01T16:34:42.477+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2025-11-01T16:34:42.541+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: access_log_refresh_dag.run_dbt_models manual__2025-11-01T16:29:25.111909+00:00 [queued]>
+[2025-11-01T16:34:42.555+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: access_log_refresh_dag.run_dbt_models manual__2025-11-01T16:29:25.111909+00:00 [queued]>
+[2025-11-01T16:34:42.556+0000] {taskinstance.py:2306} INFO - Starting attempt 2 of 2
+[2025-11-01T16:34:42.580+0000] {taskinstance.py:2330} INFO - Executing <Task(BashOperator): run_dbt_models> on 2025-11-01 16:29:25.111909+00:00
+[2025-11-01T16:34:42.596+0000] {standard_task_runner.py:90} INFO - Running: ['airflow', 'tasks', 'run', 'access_log_refresh_dag', 'run_dbt_models', 'manual__2025-11-01T16:29:25.111909+00:00', '--job-id', '18', '--raw', '--subdir', 'DAGS_FOLDER/access_log_refresh_dag.py', '--cfg-path', '/tmp/tmp6izz74d1']
+[2025-11-01T16:34:42.603+0000] {standard_task_runner.py:91} INFO - Job 18: Subtask run_dbt_models
+[2025-11-01T16:34:42.602+0000] {logging_mixin.py:188} WARNING - /home/airflow/.local/lib/python3.12/site-packages/airflow/task/task_runner/standard_task_runner.py:62 DeprecationWarning: This process (pid=201) is multi-threaded, use of fork() may lead to deadlocks in the child.
+[2025-11-01T16:34:42.603+0000] {standard_task_runner.py:64} INFO - Started process 203 to run task
+[2025-11-01T16:34:42.711+0000] {task_command.py:426} INFO - Running <TaskInstance: access_log_refresh_dag.run_dbt_models manual__2025-11-01T16:29:25.111909+00:00 [running]> on host d400d0dd903a
+[2025-11-01T16:34:43.143+0000] {taskinstance.py:2648} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='airflow' AIRFLOW_CTX_DAG_ID='access_log_refresh_dag' AIRFLOW_CTX_TASK_ID='run_dbt_models' AIRFLOW_CTX_EXECUTION_DATE='2025-11-01T16:29:25.111909+00:00' AIRFLOW_CTX_TRY_NUMBER='2' AIRFLOW_CTX_DAG_RUN_ID='manual__2025-11-01T16:29:25.111909+00:00'
+[2025-11-01T16:34:43.145+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2025-11-01T16:34:43.160+0000] {subprocess.py:63} INFO - Tmp dir root location: /tmp
+[2025-11-01T16:34:43.162+0000] {subprocess.py:75} INFO - Running command: ['/usr/bin/bash', '-c', 'dbt run --project-dir /home/airflow/dbt_projects/access_log_project --profiles-dir /home/airflow/.dbt']
+[2025-11-01T16:34:43.181+0000] {subprocess.py:86} INFO - Output:
+[2025-11-01T16:34:47.136+0000] {subprocess.py:93} INFO - [0m16:34:47  Running with dbt=1.9.0
+[2025-11-01T16:34:47.759+0000] {subprocess.py:93} INFO - [0m16:34:47  Registered adapter: postgres=1.9.0
+[2025-11-01T16:34:48.073+0000] {subprocess.py:93} INFO - [0m16:34:48  Unable to do partial parsing because saved manifest not found. Starting full parse.
+[2025-11-01T16:34:50.358+0000] {subprocess.py:93} INFO - [0m16:34:50  Encountered an error:
+[2025-11-01T16:34:50.359+0000] {subprocess.py:93} INFO - Compilation Error
+[2025-11-01T16:34:50.360+0000] {subprocess.py:93} INFO -   Model 'model.access_log_project.stg_access.logs' (models/stg_access.logs.sql) depends on a source named 'public.access_logs' which was not found
+[2025-11-01T16:34:52.124+0000] {subprocess.py:97} INFO - Command exited with return code 2
+[2025-11-01T16:34:52.126+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2025-11-01T16:34:52.148+0000] {taskinstance.py:2905} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/taskinstance.py", line 465, in _execute_task
+    result = _execute_callable(context=context, **execute_callable_kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/taskinstance.py", line 432, in _execute_callable
+    return execute_callable(context=context, **execute_callable_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/baseoperator.py", line 401, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/operators/bash.py", line 243, in execute
+    raise AirflowException(
+airflow.exceptions.AirflowException: Bash command failed. The command returned a non-zero exit code 2.
+[2025-11-01T16:34:52.154+0000] {taskinstance.py:1206} INFO - Marking task as FAILED. dag_id=access_log_refresh_dag, task_id=run_dbt_models, run_id=manual__2025-11-01T16:29:25.111909+00:00, execution_date=20251101T162925, start_date=20251101T163442, end_date=20251101T163452
+[2025-11-01T16:34:52.176+0000] {standard_task_runner.py:110} ERROR - Failed to execute job 18 for task run_dbt_models (Bash command failed. The command returned a non-zero exit code 2.; 203)
+[2025-11-01T16:34:52.216+0000] {local_task_job_runner.py:243} INFO - Task exited with return code 1
+[2025-11-01T16:34:52.246+0000] {taskinstance.py:3503} INFO - 0 downstream tasks scheduled from follow-on schedule check
+[2025-11-01T16:34:52.250+0000] {local_task_job_runner.py:222} INFO - ::endgroup::
