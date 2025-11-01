@@ -56,7 +56,7 @@ graph LR
 
 ### 1. Data Generation
 The `generate_access_logs.py` script creates synthetic access logs with:
-- 750 sample records with realistic patterns
+- 998 sample records with realistic patterns
 - 92% success vs 8% failure rate
 - Work hours (8 AM – 6 PM) simulation
 - Auto-generated logout times for successful logins
@@ -324,13 +324,6 @@ access_log_analysis/
 ├── .env.template
 └── README.md
 ```
-
----
-
-## 💬 Talking Points (for Internal Interview)
-
-> “I built a **Dockerized security monitoring pipeline** that generates synthetic access logs, loads them into PostgreSQL using SQLAlchemy, transforms them with dbt, and automates everything through Airflow.
-> Finally, I visualize risky login behavior in Power BI — helping identify failed logins, off-hour access, and users with multiple IP addresses.”
 
 ---
 
