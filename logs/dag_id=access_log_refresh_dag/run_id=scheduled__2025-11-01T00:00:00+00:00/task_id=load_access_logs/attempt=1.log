@@ -1,0 +1,22 @@
+[2025-11-02T15:15:58.265+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2025-11-02T15:15:58.736+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: access_log_refresh_dag.load_access_logs scheduled__2025-11-01T00:00:00+00:00 [queued]>
+[2025-11-02T15:15:58.849+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: access_log_refresh_dag.load_access_logs scheduled__2025-11-01T00:00:00+00:00 [queued]>
+[2025-11-02T15:15:58.850+0000] {taskinstance.py:2306} INFO - Starting attempt 1 of 2
+[2025-11-02T15:15:58.980+0000] {taskinstance.py:2330} INFO - Executing <Task(PythonOperator): load_access_logs> on 2025-11-01 00:00:00+00:00
+[2025-11-02T15:15:59.066+0000] {standard_task_runner.py:90} INFO - Running: ['airflow', 'tasks', 'run', 'access_log_refresh_dag', 'load_access_logs', 'scheduled__2025-11-01T00:00:00+00:00', '--job-id', '3', '--raw', '--subdir', 'DAGS_FOLDER/access_log_refresh_dag.py', '--cfg-path', '/tmp/tmpyfw9depp']
+[2025-11-02T15:15:59.104+0000] {standard_task_runner.py:91} INFO - Job 3: Subtask load_access_logs
+[2025-11-02T15:15:59.172+0000] {logging_mixin.py:188} WARNING - /home/airflow/.local/lib/python3.12/site-packages/airflow/task/task_runner/standard_task_runner.py:62 DeprecationWarning: This process (pid=318) is multi-threaded, use of fork() may lead to deadlocks in the child.
+[2025-11-02T15:15:59.188+0000] {standard_task_runner.py:64} INFO - Started process 320 to run task
+[2025-11-02T15:16:00.012+0000] {task_command.py:426} INFO - Running <TaskInstance: access_log_refresh_dag.load_access_logs scheduled__2025-11-01T00:00:00+00:00 [running]> on host e34b3a823b72
+[2025-11-02T15:16:01.013+0000] {taskinstance.py:2648} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='airflow' AIRFLOW_CTX_DAG_ID='access_log_refresh_dag' AIRFLOW_CTX_TASK_ID='load_access_logs' AIRFLOW_CTX_EXECUTION_DATE='2025-11-01T00:00:00+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='scheduled__2025-11-01T00:00:00+00:00'
+[2025-11-02T15:16:01.042+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2025-11-02T15:16:28.443+0000] {logging_mixin.py:188} INFO - ✅ Table created or already exists.
+[2025-11-02T15:16:28.538+0000] {logging_mixin.py:188} INFO - 📄 CSV loaded with 998 rows.
+[2025-11-02T15:16:29.156+0000] {logging_mixin.py:188} INFO - ✅ Inserted 998 new rows (skipped 0).
+[2025-11-02T15:16:29.164+0000] {logging_mixin.py:188} INFO - 🎯 ETL with SQLAlchemy + Docker completed successfully.
+[2025-11-02T15:16:29.171+0000] {python.py:237} INFO - Done. Returned value was: None
+[2025-11-02T15:16:29.173+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2025-11-02T15:16:29.249+0000] {taskinstance.py:1206} INFO - Marking task as SUCCESS. dag_id=access_log_refresh_dag, task_id=load_access_logs, run_id=scheduled__2025-11-01T00:00:00+00:00, execution_date=20251101T000000, start_date=20251102T151558, end_date=20251102T151629
+[2025-11-02T15:16:29.407+0000] {local_task_job_runner.py:243} INFO - Task exited with return code 0
+[2025-11-02T15:16:29.527+0000] {taskinstance.py:3503} INFO - 1 downstream tasks scheduled from follow-on schedule check
+[2025-11-02T15:16:29.534+0000] {local_task_job_runner.py:222} INFO - ::endgroup::

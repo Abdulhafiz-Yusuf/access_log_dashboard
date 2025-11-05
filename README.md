@@ -2,6 +2,8 @@
 
 A containerized data pipeline for analyzing user access patterns and security monitoring. Built with modern data engineering tools to demonstrate ETL automation and security analytics.
 
+[![Access Log Dashboard](/resources/images/user_access.png)]()
+
 ## Tech Stack
 - 🐍 **Python** (SQLAlchemy, Faker) - Data generation & ingestion
 - 🐘 **PostgreSQL** - Data storage
